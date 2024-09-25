@@ -149,8 +149,115 @@ const resetPassword = async (req, res) => {
   await user.save()
 
   res.status(200).json({ success: true, data: "Password updated successfully"})
+};
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    }) 
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message,
+    });
+  }
 }
 
+const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await User.find({ isAdmin: true });
+
+    res.status(200).json({
+      success: true,
+      data: admins,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message,
+    });
+  }
+};
+
+
+
+const getSingleUser = async ( req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if(!user){
+      res.status(401).json({message : 'user not found'})
+    }
+
+    res.status(200).json({success : true, data : user})
+  } catch (error) {
+    res.status(500).json({message : 'server error', error : error.message})
+  }
+}
+
+// update user profile
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true, 
+      })
+
+      if(!user){
+        return res.status(404).json({
+          success: false,
+          message: "user not found"  
+        })
+      }
+    
+      res.status(200).json({
+        success: true,
+        data: user
+      })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message
+    })
+  }
+}
+
+// update admin profile
+
+const updateAdminProfile = async (req, res) => {
+ try {
+  const admin = await User.findOne({_id: req.params.id, isAdmin: true})
+  if(!admin){
+    return res.status(404).json({success: false, message: "admin not found"})
+  }
+  const updateAdmin = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: ttrue
+  })
+  res.status(200).json({
+    success: true,
+    data: updateAdmin
+  })
+
+ } catch (error) {
+  res.status(500).json({
+    success: false,
+    message: "server error",
+    error: error.message
+  })
+ }
+
+  
+  
+}
 
 
 module.exports = {
@@ -159,5 +266,10 @@ module.exports = {
   loginUser,
   loginAdmin,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getAllUsers,
+  getAllAdmins,
+  getSingleUser,
+  updateUserProfile,
+  updateAdminProfile
 };

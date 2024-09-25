@@ -17,6 +17,10 @@ connectDB()
 // import user route
 const userRoute = require("./routes/userRoutes")
 
+// import product route
+const productRoute = require("./routes/productRoutes")
+
+
 
 
 
@@ -34,7 +38,7 @@ app.use(express.urlencoded({extended: true}))
 
 // using the user route
 app.use("/api/users", userRoute)
-
+app.use("/api/products", productRoute)
 
 
 
